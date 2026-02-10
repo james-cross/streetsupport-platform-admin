@@ -11,6 +11,7 @@ import { errorToast, successToast } from '@/utils/toast';
 import { OrganisationForm, OrganisationFormRef } from '../OrganisationForm';
 import { AdminDetailsSection } from '../sections/AdminDetailsSection';
 import { decodeText } from '@/utils/htmlDecode';
+import { prepareContentForEditor } from '@/utils/htmlUtils';
 
 export interface OrganisationTabRef {
   hasChanges: () => boolean;
@@ -57,7 +58,7 @@ const OrganisationTab = React.forwardRef<OrganisationTabRef, OrganisationTabProp
     AssociatedLocationIds: organisation.AssociatedLocationIds || [],
     Name: decodeText(organisation.Name || ''),
     ShortDescription: decodeText(organisation.ShortDescription || ''),
-    Description: decodeText(organisation.Description || ''),
+    Description: prepareContentForEditor(decodeText(organisation.Description || '')),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Tags: organisation.Tags ? organisation.Tags.split(',').filter(tag => tag.trim()) as any : [],
     IsVerified: organisation.IsVerified || false,
@@ -84,19 +85,10 @@ const OrganisationTab = React.forwardRef<OrganisationTabRef, OrganisationTabProp
     Administrators: organisation.Administrators || []
   };
 
-  // Capture the form's actual state after it has stabilised
-  // The rich text editor normalises content on load, so we wait
-  // before capturing the baseline for change detection
+  // Store initial data for comparison when component mounts or organisation changes
   useEffect(() => {
-    setInitialFormData(undefined);
-
-    const timer = setTimeout(() => {
-      if (formRef.current) {
-        setInitialFormData(JSON.parse(JSON.stringify(formRef.current.getFormData())));
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
+    setInitialFormData(JSON.parse(JSON.stringify(initialData)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organisation]);
 
   // Expose methods to parent via ref

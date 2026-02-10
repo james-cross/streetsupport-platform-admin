@@ -68,8 +68,6 @@ const AddServiceModal: React.FC<AddServiceModalProps> = ({
   const [showCancelConfirm, setShowConfirmModal] = useState(false);
   const [originalData, setOriginalData] = useState<IGroupedServiceFormData | null>(null);
   const infoPreparedRef = useRef(false);
-  const formDataRef = useRef(formData);
-  formDataRef.current = formData;
 
   // Initialize form data when service prop changes
   useEffect(() => {
@@ -94,7 +92,7 @@ const AddServiceModal: React.FC<AddServiceModalProps> = ({
         CategoryId: service.CategoryId,
         CategoryName: decodeText(service.CategoryName || ''),
         CategorySynopsis: decodeText(service.CategorySynopsis || ''),
-        Info: service.Info || '',
+        Info: prepareContentForEditor(service.Info || ''),
         Tags: service.Tags,
         Location: {
           IsOutreachLocation: service.Location.IsOutreachLocation || false,
@@ -123,6 +121,7 @@ const AddServiceModal: React.FC<AddServiceModalProps> = ({
         ClientGroupKeys: service.ClientGroupKeys || []
       };
       setFormData(initialData);
+      setOriginalData(JSON.parse(JSON.stringify(initialData)));
     } else {
       // Reset form for new service
       const initialData: IGroupedServiceFormData = {
@@ -145,21 +144,9 @@ const AddServiceModal: React.FC<AddServiceModalProps> = ({
         ClientGroupKeys: []
       };
       setFormData(initialData);
+      setOriginalData(JSON.parse(JSON.stringify(initialData)));
     }
   }, [service, organisation._id, organisation.IsPublished, organisation.IsVerified, organisation.Key, organisation.Name]);
-
-  // Capture form state after the rich text editor has stabilised
-  // for accurate change detection
-  useEffect(() => {
-    setOriginalData(null);
-    infoPreparedRef.current = false;
-
-    const timer = setTimeout(() => {
-      setOriginalData(JSON.parse(JSON.stringify(formDataRef.current)));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [service, organisation._id]);
 
   // Prepare legacy Info content for the editor on initial load
   useEffect(() => {

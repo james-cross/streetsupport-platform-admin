@@ -323,42 +323,47 @@ function ToolbarPlugin({ disabled, features }: { disabled: boolean; features: To
 }
 
 // Plugin to set initial content
-function InitialContentPlugin({ initialHtml }: { initialHtml: string }) {
+function InitialContentPlugin({ initialHtml, onInitialized }: { initialHtml: string; onInitialized?: () => void }) {
   const [editor] = useLexicalComposerContext();
   const [isInitialized, setIsInitialized] = React.useState(false);
 
   useEffect(() => {
     // Only set initial content once on mount
-    if (!isInitialized && initialHtml) {
-      editor.update(() => {
-        const parser = new DOMParser();
-        const dom = parser.parseFromString(initialHtml, 'text/html');
-        const nodes = $generateNodesFromDOM(editor, dom);
-        const root = $getRoot();
-        root.clear();
+    if (!isInitialized) {
+      if (initialHtml) {
+        editor.update(() => {
+          const parser = new DOMParser();
+          const dom = parser.parseFromString(initialHtml, 'text/html');
+          const nodes = $generateNodesFromDOM(editor, dom);
+          const root = $getRoot();
+          root.clear();
 
-        // Only append valid nodes (ElementNode or DecoratorNode)
-        nodes.forEach((node) => {
-          if ($isElementNode(node) || $isDecoratorNode(node)) {
-            root.append(node);
-          } else {
-            // Wrap text nodes in a paragraph
-            const paragraph = $createParagraphNode();
-            paragraph.append(node);
-            root.append(paragraph);
+          // Only append valid nodes (ElementNode or DecoratorNode)
+          nodes.forEach((node) => {
+            if ($isElementNode(node) || $isDecoratorNode(node)) {
+              root.append(node);
+            } else {
+              // Wrap text nodes in a paragraph
+              const paragraph = $createParagraphNode();
+              paragraph.append(node);
+              root.append(paragraph);
+            }
+          });
+
+          // If no nodes were added, add an empty paragraph
+          if (root.getChildrenSize() === 0) {
+            root.append($createParagraphNode());
           }
         });
-
-        // If no nodes were added, add an empty paragraph
-        if (root.getChildrenSize() === 0) {
-          root.append($createParagraphNode());
-        }
-      });
+      }
 
       setIsInitialized(true);
+      // Signal that initial content has been loaded and the synchronous
+      // onChange from the editor update has already fired
+      onInitialized?.();
     }
-  }, [editor, isInitialized, initialHtml]);
-  
+  }, [editor, isInitialized, initialHtml, onInitialized]);
+
   return null;
 }
 
@@ -388,6 +393,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   toolbarFeatures = DEFAULT_TOOLBAR_FEATURES,
   allowedTags,
 }) => {
+  const contentInitialized = React.useRef(false);
   const mergedFeatures = { ...DEFAULT_TOOLBAR_FEATURES, ...toolbarFeatures };
   const initialConfig = {
     namespace: 'RichTextEditor',
@@ -418,6 +424,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   };
 
   const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
+    if (!contentInitialized.current) return;
     editor.update(() => {
       const htmlString = $generateHtmlFromNodes(editor);
       const sanitized = sanitizeContent(htmlString, allowedTags);
@@ -459,7 +466,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <HistoryPlugin />
           <ListPlugin />
           <LinkPlugin />
-          <InitialContentPlugin initialHtml={value} />
+          <InitialContentPlugin initialHtml={value} onInitialized={() => { contentInitialized.current = true; }} />
         </div>
       </LexicalComposer>
 
