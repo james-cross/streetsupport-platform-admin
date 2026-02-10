@@ -21,6 +21,7 @@ import { authenticatedFetch } from '@/utils/authenticatedFetch';
 import { errorToast, successToast } from '@/utils/toast';
 import { decodeText } from '@/utils/htmlDecode';
 import { Textarea } from '@/components/ui/Textarea';
+import { prepareContentForTextarea } from '@/utils/htmlUtils';
 
 interface AddServiceModalProps {
   isOpen: boolean;
@@ -91,7 +92,7 @@ const AddServiceModal: React.FC<AddServiceModalProps> = ({
         CategoryId: service.CategoryId,
         CategoryName: decodeText(service.CategoryName || ''),
         CategorySynopsis: decodeText(service.CategorySynopsis || ''),
-        Info: decodeText(service.Info || ''),
+        Info: prepareContentForTextarea(service.Info || ''),
         Tags: service.Tags,
         Location: {
           IsOutreachLocation: service.Location.IsOutreachLocation || false,
@@ -145,9 +146,16 @@ const AddServiceModal: React.FC<AddServiceModalProps> = ({
     }
   }, [service, organisation._id, organisation.IsPublished, organisation.IsVerified, organisation.Key, organisation.Name]);
 
-  // Capture form state for change detection
+  // Capture form state after it has settled for accurate change detection.
+  // The timeout ensures setFormData from the initialisation effect has been applied.
   useEffect(() => {
-    setOriginalData(JSON.parse(JSON.stringify(formDataRef.current)));
+    setOriginalData(null);
+
+    const timer = setTimeout(() => {
+      setOriginalData(JSON.parse(JSON.stringify(formDataRef.current)));
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [service, organisation._id]);
 
   // Fetch service categories

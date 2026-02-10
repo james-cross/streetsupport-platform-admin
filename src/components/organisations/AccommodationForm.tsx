@@ -6,6 +6,7 @@ import { ValidationError } from '@/components/ui/ErrorDisplay';
 import { IAccommodation, IAccommodationFormData, DiscretionaryValue } from '@/types/organisations/IAccommodation';
 import { AccommodationType } from '@/types/organisations/IAccommodation';
 import { validateAccommodation } from '@/schemas/accommodationSchema';
+import { prepareContentForTextarea } from '@/utils/htmlUtils';
 import { GeneralInfoSection } from './accommodation-sections/GeneralInfoSection';
 import { ContactDetailsSection } from './accommodation-sections/ContactDetailsSection';
 import { LocationSection } from './accommodation-sections/LocationSection';
@@ -85,7 +86,10 @@ export const AccommodationForm = React.forwardRef<AccommodationFormRef, Accommod
   const getInitialFormData = useCallback((): IAccommodationFormData => {
     if (initialData) {
       return {
-        GeneralInfo: initialData.GeneralInfo,
+        GeneralInfo: {
+          ...initialData.GeneralInfo,
+          Description: prepareContentForTextarea(initialData.GeneralInfo.Description || ''),
+        },
         PricingAndRequirementsInfo: initialData.PricingAndRequirementsInfo,
         ContactInformation: initialData.ContactInformation,
         Address: initialData.Address,
