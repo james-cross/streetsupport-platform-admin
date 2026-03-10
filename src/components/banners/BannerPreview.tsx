@@ -172,32 +172,30 @@ export const BannerPreview: React.FC<BannerPreviewProps> = ({ data, className = 
       )}
 
       {isCompactLayout ? (
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-4 md:py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h2 className="sr-only">{props.title}</h2>
-            {props.description && (
-              <div
-                className={`text-base ${textColourClass} opacity-90 prose prose-sm max-w-none ${props.textColour === 'white' ? 'prose-invert' : ''}`}
-                dangerouslySetInnerHTML={{ __html: sanitizeHtmlForDisplay(props.description) }}
-              />
-            )}
-            {props.ctaButtons.length > 0 && (
-              <div className="flex flex-wrap gap-3 shrink-0">
-                {props.ctaButtons.map((btn, index) => (
-                  <a
-                    key={index}
-                    href={btn.url}
-                    className={generateCTAClasses(btn.variant, props.textColour as TextColour)}
-                    target={btn.external ? '_blank' : undefined}
-                    rel={btn.external ? 'noopener noreferrer' : undefined}
-                  >
-                    {btn.label}
-                    {btn.external && <ExternalLinkIcon />}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="relative z-10 max-w-3xl mx-auto px-4 py-8 md:py-10 text-center">
+          <h2 className="sr-only">{props.title}</h2>
+          {props.description && (
+            <div
+              className={`text-lg ${textColourClass} mb-4 [&_p]:m-0 ${props.textColour === 'white' ? '[&_a]:text-white [&_a]:underline' : '[&_a]:text-brand-a [&_a]:underline'}`}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtmlForDisplay(props.description) }}
+            />
+          )}
+          {props.ctaButtons.length > 0 && (
+            <div className="flex flex-wrap gap-3 justify-center">
+              {props.ctaButtons.map((btn, index) => (
+                <a
+                  key={index}
+                  href={btn.url}
+                  className={generateCTAClasses(btn.variant, props.textColour as TextColour)}
+                  target={btn.external ? '_blank' : undefined}
+                  rel={btn.external ? 'noopener noreferrer' : undefined}
+                >
+                  {btn.label}
+                  {btn.external && <ExternalLinkIcon />}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className={`relative z-10 ${isSplitLayout ? 'max-w-7xl mx-auto px-4 py-12 md:py-16' : 'px-4 py-12 md:py-16'}`}>
