@@ -18,6 +18,15 @@
       ]
     },
     {
+      "source": "/guides/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
       "source": "/static/(.*)",
       "headers": [
         {
