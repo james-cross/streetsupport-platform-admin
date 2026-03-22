@@ -9,6 +9,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import Nav from '@/components/partials/Nav';
 import { Toaster } from 'react-hot-toast';
 import { BreadcrumbProvider } from '@/contexts/BreadcrumbContext';
+import { GuideBanner } from '@/components/ui/GuideBanner';
 
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
@@ -67,6 +68,7 @@ export default function RootLayout({
               <Nav/>
               <div className="flex-grow pt-20">
                 <Breadcrumbs />
+                <GuideBanner />
                 <main>
                   {children}
                 </main>
