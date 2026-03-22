@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useAuthorization } from '@/hooks/useAuthorization';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { getGuidesForUser } from '@/lib/guideUtils';
-import { Download } from 'lucide-react';
+import { ExternalLink, Download } from 'lucide-react';
 
 export default function GuidePage() {
   const { isChecking, isAuthorized } = useAuthorization({
@@ -15,7 +14,6 @@ export default function GuidePage() {
   });
 
   const { data: session } = useSession();
-  const [activeGuideIndex, setActiveGuideIndex] = useState(0);
 
   if (isChecking) {
     return <LoadingSpinner />;
@@ -26,50 +24,43 @@ export default function GuidePage() {
   }
 
   const guides = getGuidesForUser(session.user.authClaims);
-  const activeGuide = guides[activeGuideIndex];
 
   return (
     <div className="min-h-screen bg-brand-q">
-      <PageHeader
-        title="Guide"
-        actions={
-          <a
-            href={activeGuide.path}
-            download
-            className="btn-base btn-secondary btn-sm flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Download PDF
-          </a>
-        }
-      />
+      <PageHeader title="Guide" />
 
       <div className="page-container section-spacing padding-top-zero">
-        {guides.length > 1 && (
-          <div className="flex gap-2 mb-6">
-            {guides.map((guide, index) => (
-              <button
-                key={guide.path}
-                onClick={() => setActiveGuideIndex(index)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  index === activeGuideIndex
-                    ? 'bg-brand-a text-white'
-                    : 'bg-white text-brand-l hover:bg-brand-i border border-brand-f'
-                }`}
-              >
-                {guide.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="bg-white rounded-lg border border-brand-f overflow-hidden">
-          <iframe
-            src={activeGuide.path}
-            className="w-full"
-            style={{ height: 'calc(100vh - 280px)', minHeight: '600px' }}
-            title={activeGuide.label}
-          />
+        <div className={`grid gap-6 ${guides.length > 1 ? 'sm:grid-cols-2' : 'max-w-lg'}`}>
+          {guides.map((guide) => (
+            <div
+              key={guide.path}
+              className="bg-white rounded-lg border border-brand-f p-6 flex flex-col gap-4"
+            >
+              <h2 className="text-lg font-semibold text-brand-l">{guide.label}</h2>
+              <p className="text-sm text-brand-f">
+                Step-by-step guide to using the content management system.
+              </p>
+              <div className="flex gap-3 mt-auto">
+                <a
+                  href={guide.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-base btn-primary btn-sm flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View Guide
+                </a>
+                <a
+                  href={guide.path}
+                  download
+                  className="btn-base btn-secondary btn-sm flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
