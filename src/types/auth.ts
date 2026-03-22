@@ -42,7 +42,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
     ]
   },
   [ROLES.CITY_ADMIN]: {
-    pages: ['/cities', '/organisations', '/advice', '/banners', '/location-logos', '/swep-banners', '/users', '/guide'],
+    pages: ['/cities', '/organisations', '/advice', '/banners', '/location-logos', '/swep-banners', '/users'],
     apiEndpoints: [
       { path: '/api/cities', methods: ['*'] },
       { path: '/api/organisations', methods: ['*'] },
@@ -57,7 +57,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
     ]
   },
   [ROLES.VOLUNTEER_ADMIN]: {
-    pages: ['/cities', '/organisations', '/advice', '/banners', '/location-logos', '/swep-banners', '/resources', '/guide'],
+    pages: ['/cities', '/organisations', '/advice', '/banners', '/location-logos', '/swep-banners', '/resources'],
     apiEndpoints: [
       { path: '/api/cities', methods: [HTTP_METHODS.GET] },
       { path: '/api/organisations', methods: [HTTP_METHODS.GET, HTTP_METHODS.POST, HTTP_METHODS.PUT, HTTP_METHODS.PATCH] },
@@ -73,7 +73,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
     ]
   },
   [ROLES.ORG_ADMIN]: {
-    pages: ['/organisations', '/guide'],
+    pages: ['/organisations'],
     apiEndpoints: [
       { path: '/api/cities', methods: [HTTP_METHODS.GET] },
       { path: '/api/organisations', methods: ['*'] },
@@ -84,7 +84,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
     ]
   },
   [ROLES.SWEP_ADMIN]: {
-    pages: ['/swep-banners', '/guide'],
+    pages: ['/swep-banners'],
     apiEndpoints: [
       { path: '/api/cities', methods: [HTTP_METHODS.GET] },
       { path: '/api/swep-banners', methods: ['*'] }
