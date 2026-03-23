@@ -38,6 +38,16 @@ const nextConfig = {
     minimumCacheTTL: 60,
   },
   
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        destination: '/',
+        permanent: false,
+      },
+    ];
+  },
+
   // Enable experimental features for better performance
   experimental: {
     // Optimize server components
