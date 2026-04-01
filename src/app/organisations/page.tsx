@@ -85,6 +85,16 @@ export default function OrganisationsPage() {
         .map((claim: string) => claim.replace('AdminFor:', ''))
     : [];
 
+  // Keep selectedOrganisation in sync when the organisations list refreshes
+  useEffect(() => {
+    if (selectedOrganisation) {
+      const updated = organisations.find(org => org._id === selectedOrganisation._id);
+      if (updated && updated !== selectedOrganisation) {
+        setSelectedOrganisation(updated);
+      }
+    }
+  }, [organisations, selectedOrganisation]);
+
   // Only run effects if authorized
   useEffect(() => {
     if (isAuthorized) {
@@ -111,9 +121,9 @@ export default function OrganisationsPage() {
     }
   };
 
-  const fetchOrganisations = async () => {
+  const fetchOrganisations = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       setError(null);
 
       // OrgAdmin users: Fetch organisations by key (currently only first org, but supports multiple in future)
@@ -608,8 +618,8 @@ export default function OrganisationsPage() {
             }}
             organisation={selectedOrganisation}
             onOrganisationUpdated={() => {
-              // Refresh the organisations list
-              fetchOrganisations();
+              // Silent refresh to avoid unmounting the modal with a loading spinner
+              fetchOrganisations(true);
             }}
           />
         )}
@@ -624,8 +634,8 @@ export default function OrganisationsPage() {
             }}
             organisation={selectedOrganisation}
             onOrganisationUpdated={() => {
-              // Refresh the organisations list
-              fetchOrganisations();
+              // Silent refresh to avoid unmounting the modal with a loading spinner
+              fetchOrganisations(true);
             }}
             viewMode={true}
           />
