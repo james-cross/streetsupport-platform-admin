@@ -204,6 +204,10 @@ const OrganisationTab = React.forwardRef<OrganisationTabRef, OrganisationTabProp
       }
 
       successToast.update('Organisation');
+      // Reset the dirty state baseline so tab switching no longer warns
+      if (formRef.current) {
+        setInitialFormData(JSON.parse(JSON.stringify(formRef.current.getFormData())));
+      }
       onOrganisationUpdated();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update organisation';
